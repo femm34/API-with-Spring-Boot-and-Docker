@@ -1,0 +1,20 @@
+services:
+  app:
+    image: games
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: games
+      POSTGRES_USER: fecd
+      POSTGRES_PASSWORD: femm34psql
+    ports:
+      - "5433:5432"
