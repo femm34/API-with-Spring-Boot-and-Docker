@@ -22,6 +22,10 @@ public class Game {
         this.title = title;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }

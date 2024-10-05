@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GameService implements IGameService {
@@ -31,8 +32,7 @@ public class GameService implements IGameService {
 
     @Override
     public Game getGameById(String id) {
-        return this.gameDao.findById(Long.valueOf(id))
-                .orElseThrow(() -> new GameException(HttpStatus.NOT_FOUND, "Error fetching the game"));
+        return this.gameDao.findById(Long.valueOf(id)).orElseThrow(() -> new GameException(HttpStatus.NOT_FOUND, "Error fetching the game"));
     }
 
     @Override
@@ -46,8 +46,10 @@ public class GameService implements IGameService {
         if (!this.gameExists(id)) {
             throw new GameException(HttpStatus.NOT_FOUND, "Cannot update the game because it does not exist: ID " + id);
         }
-        Game game = this.getGameById(id);
-        return this.gameDao.save(GameMapper.toEntity(updateGameDto, game));
+        return Optional.of(updateGameDto).map(gameUpdate -> {
+            Game game = this.getGameById(id);
+            return GameMapper.toEntity(gameUpdate, game);
+        }).map(gameDao::save).orElseThrow(() -> new GameException(HttpStatus.BAD_REQUEST, "Error updating the game"));
     }
 
     @Override
